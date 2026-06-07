@@ -23,6 +23,9 @@ public sealed partial class SalvageSystem
 
     private List<(Entity<TransformComponent> Entity, EntityUid MapUid, Vector2 LocalPosition)> _detachEnts = new();
 
+    private const float ReleaseTime = 59f; //DeltaV
+
+
     private void InitializeMagnet()
     {
         _salvMobQuery = GetEntityQuery<SalvageMobRestrictionsComponent>();
@@ -107,7 +110,8 @@ public sealed partial class SalvageSystem
                 {
                     EndMagnet((uid, magnetData));
                 }
-                else if (!magnetData.Announced && (magnetData.EndTime.Value - curTime).TotalSeconds < 59) //DeltaV: was 31 seconds. Increased to give time to actually fulton a crate out.
+                // else if (!magnetData.Announced && (magnetData.EndTime.Value - curTime).TotalSeconds < 31) DeltaV - we instead use a const for the release threshold so that it can be shared by player interaction.
+                else if (!magnetData.Announced && (magnetData.EndTime.Value - curTime).TotalSeconds < ReleaseTime)
                 {
                     var magnet = GetMagnet((uid, magnetData));
 
@@ -127,6 +131,9 @@ public sealed partial class SalvageSystem
             }
         }
     }
+
+
+
 
     /// <summary>
     /// Ends the magnet attachment and deletes the relevant grids.
